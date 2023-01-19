@@ -1,0 +1,1 @@
+export { commitToDB } from './commitToDB';
