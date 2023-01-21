@@ -11,7 +11,7 @@ export const GetAbsentSchema = {
     200: Type.Union([
       Type.Object({
         id: DataType.id,
-        pengajarId: DataType.id,
+        pengajarId: Type.Union([DataType.id, Type.Null()]),
         programId: DataType.id,
         date: DataType.date,
         present: Type.Boolean(),
@@ -27,7 +27,7 @@ export type GetAbsentTSchema = typeof GetAbsentSchema;
 export const AddAbsentSchema = {
   body: Type.Object({
     pelajarId: DataType.id,
-    pengajarId: DataType.id,
+    pengajarId: Type.Optional(DataType.id),
     programId: DataType.id,
     date: DataType.date,
     present: Type.Boolean(),
@@ -36,7 +36,7 @@ export const AddAbsentSchema = {
   response: {
     201: Type.Object({
       id: DataType.id,
-      pengajarId: DataType.id,
+      pengajarId: Type.Union([DataType.id, Type.Null()]),
       programId: DataType.id,
       date: DataType.date,
       present: Type.Boolean(),
@@ -50,7 +50,7 @@ export type AddAbsentTSchema = typeof AddAbsentSchema;
 export const UpdateAbsentSchema = {
   body: Type.Object({
     pelajarId: DataType.id,
-    pengajarId: DataType.id,
+    pengajarId: Type.Optional(DataType.id),
     programId: DataType.id,
     date: DataType.date,
     present: Type.Boolean(),
@@ -59,7 +59,7 @@ export const UpdateAbsentSchema = {
   response: {
     200: Type.Object({
       id: DataType.id,
-      pengajarId: DataType.id,
+      pengajarId: Type.Union([DataType.id, Type.Null()]),
       programId: DataType.id,
       date: DataType.date,
       present: Type.Boolean(),

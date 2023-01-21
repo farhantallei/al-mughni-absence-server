@@ -3,8 +3,22 @@ import prisma from '../../prisma';
 import { commitToDB } from '../../utils';
 import { formatDate } from '../../utils/formatDate';
 
-export async function getProgram(reply: FastifyReply) {
-  return await commitToDB(prisma.program.findMany(), reply);
+export async function getProgram(
+  reply: FastifyReply,
+  { pelajarId }: { pelajarId: number }
+) {
+  return await commitToDB(
+    prisma.program.findMany({
+      select: {
+        id: true,
+        name: true,
+        individual: true,
+        pengajar: { select: { programId: true }, where: { pelajarId } },
+      },
+      orderBy: { id: 'asc' },
+    }),
+    reply
+  );
 }
 
 export async function getAbsentByPelajarId(

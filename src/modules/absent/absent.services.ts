@@ -48,7 +48,7 @@ export async function addAbsent(
     reason?: string;
     date: Date;
     pelajarId: number;
-    pengajarId: number;
+    pengajarId?: number;
     programId: number;
     present: boolean;
   }
@@ -77,7 +77,7 @@ export async function updateAbsent(
     reason?: string | null;
     date: Date;
     pelajarId: number;
-    pengajarId: number;
+    pengajarId?: number;
     programId: number;
     present: boolean;
   }

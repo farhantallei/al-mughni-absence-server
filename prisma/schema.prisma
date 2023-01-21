@@ -10,13 +10,13 @@ datasource db {
 model Absent {
   id         Int      @id @default(autoincrement())
   pelajarId  Int
-  pengajarId Int
+  pengajarId Int?
   programId  Int
   date       DateTime @db.Date
   present    Boolean
   reason     String?
   createdAt  DateTime @default(now()) @db.Timestamp(0)
-  Pelajar    Pelajar  @relation(fields: [pelajarId], references: [id])
+  pelajar    Pelajar  @relation(fields: [pelajarId], references: [id])
 
   @@unique([pelajarId, programId, date])
 }
@@ -26,23 +26,24 @@ model Pelajar {
   username String     @unique @db.VarChar(100)
   name     String     @db.VarChar(100)
   Absent   Absent[]
-  Pengajar Pengajar[]
+  pengajar Pengajar[]
 }
 
 model Pengajar {
   pelajarId Int
   programId Int
-  Pelajar   Pelajar @relation(fields: [pelajarId], references: [id])
-  Program   Program @relation(fields: [programId], references: [id])
-  // Schedule  Schedule[]
+  pelajar   Pelajar @relation(fields: [pelajarId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
+  // schedule  Schedule[]
 
   @@id([pelajarId, programId])
 }
 
 model Program {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique() @db.VarChar(100)
-  Pengajar Pengajar[]
+  id         Int        @id @default(autoincrement())
+  name       String     @unique() @db.VarChar(100)
+  individual Boolean    @default(false)
+  pengajar   Pengajar[]
 }
 
 // model Schedule {
@@ -50,7 +51,7 @@ model Program {
 //   pengajarId Int
 //   programId  Int
 //   date       DateTime @db.Date
-//   Pengajar   Pengajar @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
+//   pengajar   Pengajar @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
 
 //   @@unique([pengajarId, programId, date])
 // }

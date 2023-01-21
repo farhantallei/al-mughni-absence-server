@@ -9,11 +9,11 @@ export async function getPengajarByProgram(
   return await commitToDB(
     prisma.pengajar
       .findMany({
-        where: { Program: { name: program } },
-        select: { Pelajar: true },
-        orderBy: { Pelajar: { name: 'asc' } },
+        where: { program: { name: program } },
+        select: { pelajar: true },
+        orderBy: { pelajar: { name: 'asc' } },
       })
-      .then((pengajar) => pengajar.map((val) => val.Pelajar)),
+      .then((pengajar) => pengajar.map(({ pelajar }) => pelajar)),
     reply
   );
 }
