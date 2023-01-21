@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Absent {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   pelajarId  Int
   pengajarId Int?
   programId  Int
-  date       DateTime @db.Date
+  date       DateTime  @db.Date
   present    Boolean
   reason     String?
-  createdAt  DateTime @default(now()) @db.Timestamp(0)
-  pelajar    Pelajar  @relation(fields: [pelajarId], references: [id])
+  createdAt  DateTime  @default(now()) @db.Timestamp(0)
+  pelajar    Pelajar   @relation(fields: [pelajarId], references: [id])
+  pengajar   Pengajar? @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
 
   @@unique([pelajarId, programId, date])
 }
@@ -32,8 +33,9 @@ model Pelajar {
 model Pengajar {
   pelajarId Int
   programId Int
-  pelajar   Pelajar @relation(fields: [pelajarId], references: [id])
-  program   Program @relation(fields: [programId], references: [id])
+  pelajar   Pelajar  @relation(fields: [pelajarId], references: [id])
+  program   Program  @relation(fields: [programId], references: [id])
+  absen     Absent[]
   // schedule  Schedule[]
 
   @@id([pelajarId, programId])
