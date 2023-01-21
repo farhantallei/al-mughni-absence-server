@@ -11,7 +11,7 @@ export const GetProgramListHandler: RouteHandlerTypebox<
 
   let result: {
     id: number;
-    program: string;
+    name: string;
     status: 'alpha' | 'present' | 'absent';
     reason: string | null;
   }[] = [];
@@ -30,7 +30,7 @@ export const GetProgramListHandler: RouteHandlerTypebox<
 
     result.push({
       id: programs[i].id,
-      program: programs[i].name,
+      name: programs[i].name,
       status,
       reason: absent?.reason || null,
     });

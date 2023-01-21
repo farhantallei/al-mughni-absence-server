@@ -7,7 +7,7 @@ export const GetProgramListSchema = {
     200: Type.Array(
       Type.Object({
         id: DataType.id,
-        program: Type.String(),
+        name: Type.String(),
         status: Type.Union([
           Type.Literal('alpha'),
           Type.Literal('present'),
