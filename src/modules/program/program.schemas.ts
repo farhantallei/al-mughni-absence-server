@@ -7,13 +7,19 @@ export const GetProgramListSchema = {
     200: Type.Array(
       Type.Object({
         id: DataType.id,
+        pengajarId: Type.Union([DataType.id, Type.Null()]),
         name: Type.String(),
         individual: Type.Boolean(),
         pengajar: Type.Boolean(),
-        status: Type.Union([
+        presentStatus: Type.Union([
           Type.Literal('alpha'),
           Type.Literal('present'),
           Type.Literal('absent'),
+        ]),
+        programStatus: Type.Union([
+          Type.Literal('available'),
+          Type.Literal('unavailable'),
+          Type.Literal('alibi'),
         ]),
         reason: Type.Union([Type.String(), Type.Null()]),
       })

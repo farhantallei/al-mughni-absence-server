@@ -2,9 +2,8 @@
 CREATE TABLE `Absent` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `pelajarId` INTEGER NOT NULL,
-    `pengajarId` INTEGER NOT NULL,
+    `pengajarId` INTEGER NULL,
     `programId` INTEGER NOT NULL,
-    `level` ENUM('dasar', 'lanjutan') NULL,
     `date` DATE NOT NULL,
     `present` BOOLEAN NOT NULL,
     `reason` VARCHAR(191) NULL,
@@ -36,8 +35,22 @@ CREATE TABLE `Pengajar` (
 CREATE TABLE `Program` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
+    `individual` BOOLEAN NOT NULL DEFAULT false,
 
     UNIQUE INDEX `Program_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Schedule` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `pengajarId` INTEGER NOT NULL,
+    `programId` INTEGER NOT NULL,
+    `date` DATE NOT NULL,
+    `available` BOOLEAN NOT NULL,
+    `reason` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `Schedule_pengajarId_programId_date_key`(`pengajarId`, `programId`, `date`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -45,7 +58,13 @@ CREATE TABLE `Program` (
 ALTER TABLE `Absent` ADD CONSTRAINT `Absent_pelajarId_fkey` FOREIGN KEY (`pelajarId`) REFERENCES `Pelajar`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Absent` ADD CONSTRAINT `Absent_pengajarId_programId_fkey` FOREIGN KEY (`pengajarId`, `programId`) REFERENCES `Pengajar`(`pelajarId`, `programId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Pengajar` ADD CONSTRAINT `Pengajar_pelajarId_fkey` FOREIGN KEY (`pelajarId`) REFERENCES `Pelajar`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Pengajar` ADD CONSTRAINT `Pengajar_programId_fkey` FOREIGN KEY (`programId`) REFERENCES `Program`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Schedule` ADD CONSTRAINT `Schedule_pengajarId_programId_fkey` FOREIGN KEY (`pengajarId`, `programId`) REFERENCES `Pengajar`(`pelajarId`, `programId`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -23,20 +23,22 @@ model Absent {
 }
 
 model Pelajar {
-  id       Int        @id @default(autoincrement())
-  username String     @unique @db.VarChar(100)
-  name     String     @db.VarChar(100)
-  Absent   Absent[]
-  pengajar Pengajar[]
+  id                Int                 @id @default(autoincrement())
+  username          String              @unique @db.VarChar(100)
+  name              String              @db.VarChar(100)
+  absent            Absent[]
+  pengajar          Pengajar[]
+  PelajarOnPengajar PelajarOnPengajar[]
 }
 
 model Pengajar {
-  pelajarId Int
-  programId Int
-  pelajar   Pelajar  @relation(fields: [pelajarId], references: [id])
-  program   Program  @relation(fields: [programId], references: [id])
-  absen     Absent[]
-  // schedule  Schedule[]
+  pelajarId         Int
+  programId         Int
+  pelajar           Pelajar             @relation(fields: [pelajarId], references: [id])
+  program           Program             @relation(fields: [programId], references: [id])
+  absen             Absent[]
+  schedule          Schedule[]
+  PelajarOnPengajar PelajarOnPengajar[]
 
   @@id([pelajarId, programId])
 }
@@ -48,12 +50,24 @@ model Program {
   pengajar   Pengajar[]
 }
 
-// model Schedule {
-//   id         Int      @id @default(autoincrement())
-//   pengajarId Int
-//   programId  Int
-//   date       DateTime @db.Date
-//   pengajar   Pengajar @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
+model Schedule {
+  id         Int      @id @default(autoincrement())
+  pengajarId Int
+  programId  Int
+  date       DateTime @db.Date
+  available  Boolean
+  reason     String?
+  pengajar   Pengajar @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
 
-//   @@unique([pengajarId, programId, date])
-// }
+  @@unique([pengajarId, programId, date])
+}
+
+model PelajarOnPengajar {
+  pelajarId  Int
+  pengajarId Int
+  programId  Int
+  pelajar    Pelajar  @relation(fields: [pelajarId], references: [id])
+  pengajar   Pengajar @relation(fields: [pengajarId, programId], references: [pelajarId, programId])
+
+  @@id([pelajarId, programId])
+}

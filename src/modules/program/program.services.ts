@@ -3,6 +3,16 @@ import prisma from '../../prisma';
 import { commitToDB } from '../../utils';
 import { formatDate } from '../../utils/formatDate';
 
+export async function checkPengajarByPelajarId(
+  reply: FastifyReply,
+  { pelajarId, programId }: { pelajarId: number; programId: number }
+) {
+  return await commitToDB(
+    prisma.pengajar.count({ where: { pelajarId, programId } }),
+    reply
+  ).then((val) => !!val);
+}
+
 export async function getProgram(
   reply: FastifyReply,
   { pelajarId }: { pelajarId: number }
@@ -21,7 +31,7 @@ export async function getProgram(
   );
 }
 
-export async function getAbsentByPelajarId(
+export async function getAbsentByProgramId(
   reply: FastifyReply,
   { pelajarId, programId }: { pelajarId: number; programId: number }
 ) {
@@ -36,6 +46,29 @@ export async function getAbsentByPelajarId(
       },
       select: { present: true, reason: true },
     }),
+    reply
+  );
+}
+
+export async function getSchedulesByProgramId(
+  reply: FastifyReply,
+  { programId }: { programId: number }
+) {
+  return await commitToDB(
+    prisma.schedule.findMany({
+      where: { programId, date: new Date(formatDate(new Date())) },
+      select: { pengajarId: true, available: true, reason: true },
+    }),
+    reply
+  );
+}
+
+export async function getPelajarByProgramId(
+  reply: FastifyReply,
+  pelajarId_programId: { pelajarId: number; programId: number }
+) {
+  return await commitToDB(
+    prisma.pelajarOnPengajar.findUnique({ where: { pelajarId_programId } }),
     reply
   );
 }
