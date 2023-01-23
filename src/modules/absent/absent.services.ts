@@ -9,7 +9,7 @@ export async function checkAbsent(
     pelajarId,
     programId,
     date,
-  }: { pelajarId: number; programId: number; date: Date }
+  }: { pelajarId: string; programId: string; date: Date }
 ) {
   return await commitToDB(
     prisma.absent.count({ where: { pelajarId, programId, date } }),
@@ -19,7 +19,7 @@ export async function checkAbsent(
 
 export async function getAbsent(
   reply: FastifyReply,
-  pelajarId_programId_date: { pelajarId: number; programId: number; date: Date }
+  pelajarId_programId_date: { pelajarId: string; programId: string; date: Date }
 ) {
   return await commitToDB(
     prisma.absent
@@ -47,9 +47,9 @@ export async function addAbsent(
   data: {
     reason?: string;
     date: Date;
-    pelajarId: number;
-    pengajarId?: number;
-    programId: number;
+    pelajarId: string;
+    pengajarId?: string;
+    programId: string;
     present: boolean;
   }
 ) {
@@ -76,9 +76,9 @@ export async function updateAbsent(
   data: {
     reason?: string | null;
     date: Date;
-    pelajarId: number;
-    pengajarId?: number;
-    programId: number;
+    pelajarId: string;
+    pengajarId?: string;
+    programId: string;
     present: boolean;
   }
 ) {

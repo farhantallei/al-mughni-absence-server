@@ -34,8 +34,9 @@ export const RegisterPelajarHandler: RouteHandlerTypebox<
     : 'unavailable';
 
   return await setPengajar(reply, { pelajarId, pengajarId, programId }).then(
-    (res) => ({
+    ({ pengajar, ...res }) => ({
       ...res,
+      pengajarName: pengajar.pelajar.name,
       programStatus,
       reason: schedule && schedule.reason != null ? schedule.reason : null,
     })

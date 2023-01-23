@@ -24,7 +24,7 @@ export const AddScheduleHandler: RouteHandlerTypebox<
   const { pengajarId, programId, date, available, reason } = request.body;
 
   const isScheduleExists = await checkSchedule(reply, {
-    pengajarId: pengajarId,
+    pengajarId,
     programId,
     date: new Date(date),
   });
@@ -51,7 +51,7 @@ export const UpdateScheduleHandler: RouteHandlerTypebox<
   const { pengajarId, programId, date, available, reason } = request.body;
 
   const isScheduleExists = await checkSchedule(reply, {
-    pengajarId: pengajarId,
+    pengajarId,
     programId,
     date: new Date(date),
   });

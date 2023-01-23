@@ -29,6 +29,7 @@ export const RegisterPelajarSchema = {
       pelajarId: DataType.id,
       pengajarId: DataType.id,
       programId: DataType.id,
+      pengajarName: DataType.string,
       programStatus: Type.Union([
         Type.Literal('available'),
         Type.Literal('unavailable'),

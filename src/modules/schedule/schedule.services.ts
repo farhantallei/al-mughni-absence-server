@@ -9,7 +9,7 @@ export async function checkSchedule(
     pengajarId,
     programId,
     date,
-  }: { pengajarId: number; programId: number; date: Date }
+  }: { pengajarId: string; programId: string; date: Date }
 ) {
   return await commitToDB(
     prisma.schedule.count({ where: { pengajarId, programId, date } }),
@@ -20,8 +20,8 @@ export async function checkSchedule(
 export async function getSchedule(
   reply: FastifyReply,
   pengajarId_programId_date: {
-    pengajarId: number;
-    programId: number;
+    pengajarId: string;
+    programId: string;
     date: Date;
   }
 ) {
@@ -49,8 +49,8 @@ export async function getSchedule(
 export async function addSchedule(
   reply: FastifyReply,
   data: {
-    pengajarId: number;
-    programId: number;
+    pengajarId: string;
+    programId: string;
     date: Date;
     available: boolean;
     reason?: string;
@@ -67,8 +67,8 @@ export async function addSchedule(
 export async function updateSchedule(
   reply: FastifyReply,
   data: {
-    pengajarId: number;
-    programId: number;
+    pengajarId: string;
+    programId: string;
     date: Date;
     available: boolean;
     reason?: string | null;

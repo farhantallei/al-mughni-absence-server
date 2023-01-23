@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/formatDate';
 
 export async function getPengajarByProgramId(
   reply: FastifyReply,
-  { programId }: { programId: number }
+  { programId }: { programId: string }
 ) {
   return await commitToDB(
     prisma.pengajar
@@ -20,7 +20,7 @@ export async function getPengajarByProgramId(
 
 export async function checkPengajarByPelajarId(
   reply: FastifyReply,
-  { pelajarId, programId }: { pelajarId: number; programId: number }
+  { pelajarId, programId }: { pelajarId: string; programId: string }
 ) {
   return await commitToDB(
     prisma.pengajar.count({ where: { pelajarId, programId } }),
@@ -30,7 +30,7 @@ export async function checkPengajarByPelajarId(
 
 export async function getProgram(
   reply: FastifyReply,
-  { pelajarId }: { pelajarId: number }
+  { pelajarId }: { pelajarId: string }
 ) {
   return await commitToDB(
     prisma.program.findMany({
@@ -48,7 +48,7 @@ export async function getProgram(
 
 export async function getSchedule(
   reply: FastifyReply,
-  { pengajarId, programId }: { pengajarId: number; programId: number }
+  { pengajarId, programId }: { pengajarId: string; programId: string }
 ) {
   return await commitToDB(
     prisma.schedule.findUnique({
@@ -67,7 +67,18 @@ export async function getSchedule(
 
 export async function setPengajar(
   reply: FastifyReply,
-  data: { pelajarId: number; pengajarId: number; programId: number }
+  data: { pelajarId: string; pengajarId: string; programId: string }
 ) {
-  return await commitToDB(prisma.pelajarOnPengajar.create({ data }), reply);
+  return await commitToDB(
+    prisma.pelajarOnPengajar.create({
+      data,
+      select: {
+        pelajarId: true,
+        pengajarId: true,
+        programId: true,
+        pengajar: { select: { pelajar: { select: { name: true } } } },
+      },
+    }),
+    reply
+  );
 }

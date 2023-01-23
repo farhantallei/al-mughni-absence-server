@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/formatDate';
 
 export async function checkPengajarByPelajarId(
   reply: FastifyReply,
-  { pelajarId, programId }: { pelajarId: number; programId: number }
+  { pelajarId, programId }: { pelajarId: string; programId: string }
 ) {
   return await commitToDB(
     prisma.pengajar.count({ where: { pelajarId, programId } }),
@@ -13,17 +13,20 @@ export async function checkPengajarByPelajarId(
   ).then((val) => !!val);
 }
 
-export async function getProgram(
-  reply: FastifyReply,
-  { pelajarId }: { pelajarId: number }
-) {
+export async function getProgram(reply: FastifyReply) {
   return await commitToDB(
     prisma.program.findMany({
       select: {
         id: true,
         name: true,
         individual: true,
-        pengajar: { select: { programId: true }, where: { pelajarId } },
+        pengajar: {
+          select: {
+            pelajarId: true,
+            programId: true,
+            pelajar: { select: { name: true } },
+          },
+        },
       },
       orderBy: { id: 'asc' },
     }),
@@ -33,7 +36,7 @@ export async function getProgram(
 
 export async function getAbsentByProgramId(
   reply: FastifyReply,
-  { pelajarId, programId }: { pelajarId: number; programId: number }
+  { pelajarId, programId }: { pelajarId: string; programId: string }
 ) {
   return await commitToDB(
     prisma.absent.findUnique({
@@ -52,7 +55,7 @@ export async function getAbsentByProgramId(
 
 export async function getSchedulesByProgramId(
   reply: FastifyReply,
-  { programId }: { programId: number }
+  { programId }: { programId: string }
 ) {
   return await commitToDB(
     prisma.schedule.findMany({
@@ -65,7 +68,7 @@ export async function getSchedulesByProgramId(
 
 export async function getPelajarByProgramId(
   reply: FastifyReply,
-  pelajarId_programId: { pelajarId: number; programId: number }
+  pelajarId_programId: { pelajarId: string; programId: string }
 ) {
   return await commitToDB(
     prisma.pelajarOnPengajar.findUnique({ where: { pelajarId_programId } }),

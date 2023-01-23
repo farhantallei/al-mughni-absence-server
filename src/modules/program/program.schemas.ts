@@ -8,6 +8,7 @@ export const GetProgramListSchema = {
       Type.Object({
         id: DataType.id,
         pengajarId: Type.Union([DataType.id, Type.Null()]),
+        pengajarName: DataType.string,
         name: Type.String(),
         individual: Type.Boolean(),
         pengajar: Type.Boolean(),

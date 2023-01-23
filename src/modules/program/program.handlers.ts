@@ -13,11 +13,12 @@ export const GetProgramListHandler: RouteHandlerTypebox<
 > = async (request, reply) => {
   const { pelajarId } = request.params;
 
-  const programs = await getProgram(reply, { pelajarId });
+  const programs = await getProgram(reply);
 
   let result: {
-    id: number;
-    pengajarId: number | null;
+    id: string;
+    pengajarId: string | null;
+    pengajarName: string;
     name: string;
     pengajar: boolean;
     individual: boolean;
@@ -43,6 +44,7 @@ export const GetProgramListHandler: RouteHandlerTypebox<
       result.push({
         id: programs[i].id,
         pengajarId: null,
+        pengajarName: '',
         name: programs[i].name,
         individual: true,
         pengajar: false,
@@ -81,6 +83,9 @@ export const GetProgramListHandler: RouteHandlerTypebox<
       result.push({
         id: programs[i].id,
         pengajarId: pelajarId,
+        pengajarName: programs[i].pengajar.filter(
+          (val) => val.pelajarId === pelajarId
+        )[0].pelajar.name,
         name: programs[i].name,
         individual: false,
         pengajar: true,
@@ -105,9 +110,13 @@ export const GetProgramListHandler: RouteHandlerTypebox<
             ? 'available'
             : 'alibi'
           : 'unavailable';
+
       result.push({
         id: programs[i].id,
         pengajarId: registeredPelajar.pengajarId,
+        pengajarName: programs[i].pengajar.filter(
+          (val) => val.pelajarId === registeredPelajar.pengajarId
+        )[0].pelajar.name,
         name: programs[i].name,
         individual: false,
         pengajar: false,
@@ -124,6 +133,7 @@ export const GetProgramListHandler: RouteHandlerTypebox<
     result.push({
       id: programs[i].id,
       pengajarId: null,
+      pengajarName: '',
       name: programs[i].name,
       individual: false,
       pengajar: false,
