@@ -7,8 +7,8 @@ import { scheduleRoutes } from '../modules/schedule/schedule.routes';
 
 export const routes: FastifyPluginAsync = async (route) => {
   route.register(pelajarRoutes, { prefix: 'pelajar' });
-  route.register(pengajarRoutes, { prefix: 'pengajar' });
-  route.register(absentRoutes, { prefix: 'absent' });
   route.register(programRoutes, { prefix: 'program' });
+  route.register(pengajarRoutes, { prefix: 'pengajar' });
   route.register(scheduleRoutes, { prefix: 'schedule' });
+  route.register(absentRoutes, { prefix: 'absent' });
 };

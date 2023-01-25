@@ -1,10 +1,10 @@
+import { Pelajar } from '../../models';
 import { RouteHandlerTypebox } from '../../types';
 import {
   LoginTSchema,
   RegisterTSchema,
   ValidationTSchema,
 } from './pelajar.schemas';
-import { createPelajar, getPelajar } from './pelajar.services';
 
 export const RegisterHandler: RouteHandlerTypebox<RegisterTSchema> = async (
   request,
@@ -12,12 +12,20 @@ export const RegisterHandler: RouteHandlerTypebox<RegisterTSchema> = async (
 ) => {
   const { username, name } = request.body;
 
-  const pelajar = await getPelajar(reply, { username });
-  if (pelajar) return reply.badRequest('Username is already taken.');
+  try {
+    const pelajar = await Pelajar.findOne({ username });
+    if (pelajar) return reply.badRequest('Username is already taken.');
 
-  const newPelajar = await createPelajar(reply, { username, name });
+    const newPelajar = await Pelajar.create({ username, name });
 
-  return reply.code(201).send(newPelajar);
+    return reply.code(201).send({
+      id: newPelajar._id as unknown as string,
+      username: newPelajar.username,
+      name: newPelajar.name,
+    });
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
 };
 
 export const LoginHandler: RouteHandlerTypebox<LoginTSchema> = async (
@@ -26,10 +34,18 @@ export const LoginHandler: RouteHandlerTypebox<LoginTSchema> = async (
 ) => {
   const { username } = request.body;
 
-  const pelajar = await getPelajar(reply, { username });
-  if (pelajar == null) return reply.badRequest('Username is not exists.');
+  try {
+    const pelajar = await Pelajar.findOne({ username });
+    if (pelajar == null) return reply.badRequest('Username is not exists.');
 
-  return reply.send(pelajar);
+    return reply.send({
+      id: pelajar._id as unknown as string,
+      username: pelajar.username,
+      name: pelajar.name,
+    });
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
 };
 
 export const ValidationHandler: RouteHandlerTypebox<ValidationTSchema> = async (
@@ -38,8 +54,16 @@ export const ValidationHandler: RouteHandlerTypebox<ValidationTSchema> = async (
 ) => {
   const { username } = request.params;
 
-  const pelajar = await getPelajar(reply, { username });
-  if (pelajar == null) return reply.unauthorized('Username is not exists.');
+  try {
+    const pelajar = await Pelajar.findOne({ username });
+    if (pelajar == null) return reply.unauthorized('Username is not exists.');
 
-  return reply.send(pelajar);
+    return reply.send({
+      id: pelajar._id as unknown as string,
+      username: pelajar.username,
+      name: pelajar.name,
+    });
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
 };

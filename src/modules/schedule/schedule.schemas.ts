@@ -67,3 +67,23 @@ export const UpdateScheduleSchema = {
 };
 
 export type UpdateScheduleTSchema = typeof UpdateScheduleSchema;
+
+export const DeleteScheduleSchema = {
+  body: Type.Object({
+    pengajarId: DataType.id,
+    programId: DataType.id,
+    date: DataType.date,
+  }),
+  response: {
+    200: Type.Object({
+      id: DataType.id,
+      pengajarId: DataType.id,
+      programId: DataType.id,
+      date: DataType.date,
+      available: Type.Boolean(),
+      reason: Type.Union([Type.String(), Type.Null()]),
+    }),
+  },
+};
+
+export type DeleteScheduleTSchema = typeof DeleteScheduleSchema;

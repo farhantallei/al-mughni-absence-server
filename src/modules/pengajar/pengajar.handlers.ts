@@ -1,17 +1,32 @@
+import { Pelajar, PelajarOnPengajar, Pengajar, Schedule } from '../../models';
 import { RouteHandlerTypebox } from '../../types';
 import { GetPengajarTSchema, RegisterPelajarTSchema } from './pengajar.schemas';
-import {
-  checkPengajarByPelajarId,
-  getPengajarByProgramId,
-  getSchedule,
-  setPengajar,
-} from './pengajar.services';
 
 export const GetPengajarHandler: RouteHandlerTypebox<
   GetPengajarTSchema
 > = async (request, reply) => {
   const { programId } = request.params;
-  return await getPengajarByProgramId(reply, { programId });
+
+  try {
+    const pengajar = await Pengajar.find({ programId });
+
+    let result: { id: string; username: string; name: string }[] = [];
+
+    for (let i = 0; i < pengajar.length; i++) {
+      const pelajar = await Pelajar.findById(pengajar[i].pelajarId);
+      if (!pelajar) continue;
+
+      result.push({
+        id: pelajar._id as unknown as string,
+        username: pelajar.username,
+        name: pelajar.name,
+      });
+    }
+
+    return result;
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
 };
 
 export const RegisterPelajarHandler: RouteHandlerTypebox<
@@ -19,26 +34,42 @@ export const RegisterPelajarHandler: RouteHandlerTypebox<
 > = async (request, reply) => {
   const { pelajarId, pengajarId, programId } = request.body;
 
-  const isRegistered = await checkPengajarByPelajarId(reply, {
-    pelajarId,
-    programId,
-  });
-  if (isRegistered) return reply.badRequest('Pelajar is already registered.');
+  try {
+    const isRegistered = await PelajarOnPengajar.findOne({
+      pelajarId,
+      pengajarId,
+      programId,
+    });
+    if (isRegistered) return reply.badRequest('Pelajar is already registered.');
 
-  const schedule = await getSchedule(reply, { pengajarId, programId });
+    const pengajar = await Pelajar.findById(pengajarId);
+    if (!pengajar) return reply.badRequest('Pengajar is not found.');
 
-  const programStatus: 'available' | 'unavailable' | 'alibi' = schedule
-    ? schedule.available
-      ? 'available'
-      : 'alibi'
-    : 'unavailable';
+    const schedule = await Schedule.findOne({ pengajarId, programId });
 
-  return await setPengajar(reply, { pelajarId, pengajarId, programId }).then(
-    ({ pengajar, ...res }) => ({
-      ...res,
-      pengajarName: pengajar.pelajar.name,
+    const programStatus: 'available' | 'unavailable' | 'alibi' = schedule
+      ? schedule.available
+        ? 'available'
+        : 'alibi'
+      : 'unavailable';
+
+    const register = await PelajarOnPengajar.create({
+      pelajarId,
+      pengajarId,
+      programId,
+    });
+
+    const reason = schedule && schedule.reason != null ? schedule.reason : null;
+
+    return reply.code(201).send({
+      pelajarId: register.pelajarId.toString(),
+      pengajarId: register.pengajarId.toString(),
+      programId: register.programId.toString(),
+      pengajarName: pengajar.name,
       programStatus,
-      reason: schedule && schedule.reason != null ? schedule.reason : null,
-    })
-  );
+      reason,
+    });
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
 };

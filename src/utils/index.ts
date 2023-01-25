@@ -1,1 +1,1 @@
-export { commitToDB } from './commitToDB';
+export { formatDate } from './formatDate';

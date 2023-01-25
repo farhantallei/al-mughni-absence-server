@@ -3,11 +3,13 @@ import {
   GetScheduleHandler,
   AddScheduleHandler,
   UpdateScheduleHandler,
+  DeleteScheduleHandler,
 } from './schedule.handlers';
 import {
   GetScheduleSchema,
   AddScheduleSchema,
   UpdateScheduleSchema,
+  DeleteScheduleSchema,
 } from './schedule.schemas';
 
 export const scheduleRoutes: FastifyPluginAsyncTypebox = async (route) => {
@@ -22,5 +24,9 @@ export const scheduleRoutes: FastifyPluginAsyncTypebox = async (route) => {
   route.patch('/', {
     schema: UpdateScheduleSchema,
     handler: UpdateScheduleHandler,
+  });
+  route.delete('/', {
+    schema: DeleteScheduleSchema,
+    handler: DeleteScheduleHandler,
   });
 };
