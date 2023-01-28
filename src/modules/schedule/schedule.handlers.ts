@@ -116,6 +116,8 @@ export const DeleteScheduleHandler: RouteHandlerTypebox<
     });
     if (!schedule) return reply.notFound('Schedule is not found.');
 
+    await Absent.deleteMany({ programId, date });
+
     return reply.send({
       id: schedule._id.toString(),
       pengajarId: schedule.pengajarId.toString(),
