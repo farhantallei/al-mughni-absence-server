@@ -110,11 +110,10 @@ export const GetProgramListHandler: RouteHandlerTypebox<
         programId: programs[i]._id,
       });
 
-      console.log(registeredPelajar);
-
       if (registeredPelajar) {
         const schedules = schedulesProgram.filter(
-          ({ pengajarId }) => pengajarId === registeredPelajar.pengajarId
+          ({ pengajarId }) =>
+            pengajarId.toString() === registeredPelajar.pengajarId.toString()
         );
 
         const programStatus: 'available' | 'unavailable' | 'alibi' =
