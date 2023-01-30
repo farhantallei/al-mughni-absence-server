@@ -1,3 +1,4 @@
+import fastifyCors from '@fastify/cors';
 import fastifySensible from '@fastify/sensible';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import fastify from 'fastify';
@@ -7,6 +8,7 @@ const app = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 export function addPlugins() {
   app.register(fastifySensible);
+  app.register(fastifyCors, { origin: '*' });
 }
 
 export function addRoutes() {

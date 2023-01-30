@@ -8,6 +8,7 @@
     "preview": "node dist/index.js"
   },
   "dependencies": {
+    "@fastify/cors": "^8.2.0",
     "@fastify/sensible": "^5.2.0",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@sinclair/typebox": "^0.25.20",
