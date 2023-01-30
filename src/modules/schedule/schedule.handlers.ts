@@ -1,9 +1,10 @@
-import { Absent, Schedule } from '../../models';
+import { Absent, Pelajar, PelajarOnPengajar, Schedule } from '../../models';
 import { RouteHandlerTypebox } from '../../types';
 import { formatDate } from '../../utils/formatDate';
 import {
   AddScheduleTSchema,
   DeleteScheduleTSchema,
+  GetAttendanceTSchema,
   GetScheduleTSchema,
   UpdateScheduleTSchema,
 } from './schedule.schemas';
@@ -30,6 +31,103 @@ export const GetScheduleHandler: RouteHandlerTypebox<
   }
 };
 
+export const GetAttendanceHandler: RouteHandlerTypebox<
+  GetAttendanceTSchema
+> = async (request, reply) => {
+  const { pengajarId, programId } = request.params;
+  const { month, year } = request.query;
+
+  try {
+    const schedules = await Schedule.find({
+      pengajarId,
+      programId,
+      date: {
+        $gte: new Date(year, month, 1),
+        $lte: new Date(
+          year,
+          month,
+          new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate()
+        ),
+      },
+    });
+
+    const paraPelajar = await PelajarOnPengajar.find({
+      programId,
+      pengajarId,
+    }).then((res) => res.map(({ pelajarId }) => pelajarId));
+
+    return await schedules.reduce<
+      Promise<
+        {
+          date: number;
+          available: string | boolean;
+          attendances: {
+            id: string;
+            username: string;
+            name: string;
+            attendance: string | boolean;
+          }[];
+        }[]
+      >
+    >(async (schAcc, { date, available, reason }) => {
+      const attendances = await paraPelajar.reduce<
+        Promise<
+          {
+            id: string;
+            username: string;
+            name: string;
+            attendance: string | boolean;
+          }[]
+        >
+      >(async (attAcc, id) => {
+        const pelajar = await Pelajar.findById(id);
+        if (pelajar == null) return attAcc;
+
+        const absent = await Absent.findOne({
+          pelajarId: id,
+          programId,
+          date,
+        });
+
+        if (!available || absent == null) {
+          (await attAcc).push({
+            id: pelajar._id.toString(),
+            username: pelajar.username,
+            name: pelajar.name,
+            attendance: false,
+          });
+        } else if (!absent.present) {
+          (await attAcc).push({
+            id: pelajar._id.toString(),
+            username: pelajar.username,
+            name: pelajar.name,
+            attendance: absent.reason,
+          });
+        } else {
+          (await attAcc).push({
+            id: pelajar._id.toString(),
+            username: pelajar.username,
+            name: pelajar.name,
+            attendance: true,
+          });
+        }
+
+        return attAcc;
+      }, Promise.resolve([]));
+
+      (await schAcc).push({
+        date: new Date(date).getDate(),
+        available: !available ? reason : available,
+        attendances,
+      });
+
+      return schAcc;
+    }, Promise.resolve([]));
+  } catch (error) {
+    return reply.internalServerError(`Error: ${error}`);
+  }
+};
+
 export const AddScheduleHandler: RouteHandlerTypebox<
   AddScheduleTSchema
 > = async (request, reply) => {
@@ -47,7 +145,7 @@ export const AddScheduleHandler: RouteHandlerTypebox<
       programId,
       date: new Date(date),
       available,
-      reason,
+      reason: reason?.trim(),
     });
 
     return reply.code(201).send({
@@ -80,7 +178,7 @@ export const UpdateScheduleHandler: RouteHandlerTypebox<
       programId,
       date: new Date(date),
       available,
-      reason: available ? null : reason,
+      reason: available ? null : reason?.trim(),
     };
 
     await Absent.deleteMany({ pengajarId, programId, date });

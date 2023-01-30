@@ -56,7 +56,7 @@ export const AddAbsentHandler: RouteHandlerTypebox<AddAbsentTSchema> = async (
       programId,
       date: new Date(date),
       present,
-      reason,
+      reason: reason?.trim(),
     });
 
     const pengajar = await Pengajar.findById(newAbsent.pengajarId);
@@ -96,7 +96,7 @@ export const UpdateAbsentHandler: RouteHandlerTypebox<
       programId,
       date: new Date(date),
       present,
-      reason: present ? null : reason,
+      reason: present ? null : reason?.trim(),
     };
 
     await Absent.findOneAndUpdate(

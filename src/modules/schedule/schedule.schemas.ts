@@ -24,6 +24,42 @@ export const GetScheduleSchema = {
 
 export type GetScheduleTSchema = typeof GetScheduleSchema;
 
+export const GetAttendanceSchema = {
+  params: Type.Object({
+    pengajarId: DataType.id,
+    programId: DataType.id,
+  }),
+  querystring: Type.Object({
+    year: Type.Integer({ minimum: 1970, maximum: new Date().getFullYear() }),
+    month: Type.Integer({ minimum: 0, maximum: 11 }),
+  }),
+  response: {
+    200: Type.Array(
+      Type.Object({
+        date: Type.Integer({
+          minimum: 1,
+          maximum: new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            0
+          ).getDate(),
+        }),
+        available: Type.Union([DataType.string, Type.Boolean()]),
+        attendances: Type.Array(
+          Type.Object({
+            id: DataType.id,
+            username: DataType.string,
+            name: DataType.string,
+            attendance: Type.Union([DataType.string, Type.Boolean()]),
+          })
+        ),
+      })
+    ),
+  },
+};
+
+export type GetAttendanceTSchema = typeof GetAttendanceSchema;
+
 export const AddScheduleSchema = {
   body: Type.Object({
     pengajarId: DataType.id,
