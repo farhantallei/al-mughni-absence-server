@@ -16,7 +16,10 @@ export const RegisterHandler: RouteHandlerTypebox<RegisterTSchema> = async (
     const pelajar = await Pelajar.findOne({ username });
     if (pelajar) return reply.badRequest('Username is already taken.');
 
-    const newPelajar = await Pelajar.create({ username, name });
+    const newPelajar = await Pelajar.create({
+      username: username.trim(),
+      name,
+    });
 
     return reply.code(201).send({
       id: newPelajar._id as unknown as string,
@@ -35,7 +38,7 @@ export const LoginHandler: RouteHandlerTypebox<LoginTSchema> = async (
   const { username } = request.body;
 
   try {
-    const pelajar = await Pelajar.findOne({ username });
+    const pelajar = await Pelajar.findOne({ username: username.trim() });
     if (pelajar == null) return reply.badRequest('Username is not exists.');
 
     return reply.send({
