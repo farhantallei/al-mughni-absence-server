@@ -43,11 +43,7 @@ export const GetAttendanceHandler: RouteHandlerTypebox<
       programId,
       date: {
         $gte: new Date(year, month, 1),
-        $lte: new Date(
-          year,
-          month,
-          new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate()
-        ),
+        $lte: new Date(year, month, new Date(year, month + 1, 0).getDate()),
       },
     });
 
